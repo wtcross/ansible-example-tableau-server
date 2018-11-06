@@ -1,0 +1,6 @@
+---
+- hosts: tag_application_tableau
+  connection: winrm
+  gather_facts: no
+  roles:
+    - tableau-uninstall

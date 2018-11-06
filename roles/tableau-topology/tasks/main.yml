@@ -1,0 +1,31 @@
+---
+- name: ensure the node is running the correct processes
+  win_shell: >
+    tsm topology set-process
+    -n {{ node_name }}
+    -pr {{ item.key }}
+    -c {{ item.value }}
+    -u {{ tableau_local_admin_user }}
+    -p {{ tableau_local_admin_pass }}
+  args:
+    chdir: "{{ tableau_bin_dir }}"
+    executable: cmd
+  loop: "{{ processes | dict2items }}"
+  async: 45
+  poll: 5
+  delegate_to: tableau-primary
+
+- name: ensure pending changes are applied
+  win_shell: >
+    tsm pending-changes apply
+    --ignore-prompt
+    --ignore-warnings
+    --request-timeout 3600
+    -u {{ tableau_local_admin_user }}
+    -p {{ tableau_local_admin_pass }}
+  args:
+    chdir: "{{ tableau_bin_dir }}"
+    executable: cmd
+  async: 3600 # escape winrm job memory limits by using async
+  delegate_to: tableau-primary
+  run_once: yes

@@ -1,0 +1,50 @@
+---
+- name: fail if tableau_local_admin_user was not defined
+  fail:
+    msg: missing required variable `tableau_local_admin_user`
+  when: tableau_local_admin_user is not defined
+  run_once: yes
+
+- name: fail if tableau_local_admin_pass was not defined
+  fail:
+    msg: missing required variable `tableau_local_admin_pass`
+  when: tableau_local_admin_pass is not defined
+  run_once: yes
+
+- name: fail if tableau_content_admin_user was not defined
+  fail:
+    msg: missing required variable `tableau_content_admin_user`
+  when: tableau_content_admin_user is not defined
+  run_once: yes
+
+- name: fail if tableau_content_admin_pass was not defined
+  fail:
+    msg: missing required variable `tableau_content_admin_pass`
+  when: tableau_content_admin_pass is not defined
+  run_once: yes
+
+- name: fail if tableau_product_keys was not defined
+  fail:
+    msg: missing required variable `tableau_product_keys`
+  when: tableau_product_keys is not defined
+  run_once: yes
+
+- name: fail if tableau_install_exe_url or tableau_install_exe_path were not defined
+  fail:
+    msg: must set one of `tableau_install_exe_url` or `tableau_install_exe_path`
+  when:
+    - tableau_install_exe_url is not defined
+    - tableau_install_exe_path is not defined
+  run_once: yes
+
+- name: fail if app_install_dir is not defined
+  fail:
+    msg: missing required variable `app_install_dir`
+  when: app_install_dir is not defined
+  run_once: yes
+
+- name: fail if tableau_bin_dir is not defined
+  fail:
+    msg: missing required variable `tableau_bin_dir`
+  when: tableau_bin_dir is not defined
+  run_once: yes

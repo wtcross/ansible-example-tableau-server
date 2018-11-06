@@ -1,0 +1,27 @@
+---
+- name: stop the cluster
+  hosts: tag_application_tableau:&tag_role_primary
+  connection: winrm
+  gather_facts: no
+  roles:
+    - tableau-stop
+    - windows-update
+    - tableau-common
+    - tableau-primary-install
+
+- name: update the workers
+  hosts: tag_application_tableau:&tag_role_worker
+  connection: winrm
+  serial: 1
+  gather_facts: no
+  roles:
+    - windows-update
+    - tableau-common
+    - tableau-worker-install
+
+- name: start the cluster
+  hosts: tag_application_tableau:&tag_role_primary
+  connection: winrm
+  gather_facts: no
+  roles:
+    - tableau-restart

@@ -1,0 +1,21 @@
+{
+  "configEntities": {
+    "runAsUser": {
+      "_type": "runAsUserType",
+      "name": "{{ tableau_service_user }}"
+    },
+    "gatewaySettings": {
+      "_type": "gatewaySettingsType",
+      "port": {{ tableau_http_port }},
+      "firewallOpeningEnabled": {{ tableau_open_firewall | bool | lower }},
+      "sslEnabled": {{ tableau_ssl_enabled | bool | lower }},
+      "sslRedirectEnabled": {{ tableau_ssl_redirect | bool | lower }},
+      "publicHost": "localhost",
+      "publicPort": {{ tableau_http_port }}
+    },
+    "identityStore": {
+      "_type": "identityStoreType",
+      "type": "local"
+    }
+  }
+}

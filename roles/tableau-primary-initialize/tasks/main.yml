@@ -1,0 +1,11 @@
+---
+- name: run the tsm command to initialize
+  win_shell: >
+    tsm initialize
+    --request-timeout 2700
+    -u {{ tableau_local_admin_user }}
+    -p {{ tableau_local_admin_pass }}
+  args:
+    chdir: "{{ tableau_bin_dir }}"
+    executable: cmd
+  async: 2700 # escape winrm job memory limits by using async

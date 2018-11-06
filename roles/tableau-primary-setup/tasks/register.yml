@@ -1,0 +1,17 @@
+---
+- name: generate registration config file
+  win_template:
+    src: registration.json.j2
+    dest: "{{ tableau_primary_registration_config_path }}"
+
+- name: run the tsm register command with the registration config
+  win_shell: >
+    tsm register
+    --file "{{ tableau_primary_registration_config_path }}"
+    -u {{ tableau_local_admin_user }}
+    -p {{ tableau_local_admin_pass }}
+  args:
+    chdir: "{{ tableau_bin_dir }}"
+    executable: cmd
+  async: 120 # escape winrm job memory limits by using async
+  poll: 5

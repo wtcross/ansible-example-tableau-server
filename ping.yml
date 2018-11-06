@@ -1,0 +1,7 @@
+---
+- name: verify that ansible works on all systems
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: ping the windows server
+      win_ping:

@@ -1,0 +1,18 @@
+---
+- name: fail if tableau_target_version is not defined
+  fail:
+    msg: missing required variable `tableau_target_version`
+  when: tableau_target_version is not defined
+  run_once: yes
+
+- name: fail if tableau_version_file_path is not defined
+  fail:
+    msg: missing required variable `tableau_version_file_path`
+  when: tableau_version_file_path is not defined
+  run_once: yes
+
+- name: fail if tableau_install_dir is not defined
+  fail:
+    msg: missing required variable `tableau_install_dir`
+  when: tableau_install_dir is not defined
+  run_once: yes

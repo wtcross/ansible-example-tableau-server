@@ -1,0 +1,56 @@
+---
+- name: apply common configuration to all tableau nodes
+  hosts: tag_application_tableau
+  connection: winrm
+  gather_facts: yes
+  roles:
+    - tableau-common
+
+- name: install tableau and initialize tsm on the primary node
+  hosts: tag_application_tableau:&tag_role_primary
+  connection: winrm
+  gather_facts: no
+  roles:
+    - name: tableau-primary-install
+    - name: tableau-primary-setup
+    - name: tableau-primary-initialize
+      when: fresh_install
+
+- name: install tableau on the workers
+  hosts: tag_application_tableau:&tag_role_worker
+  connection: winrm
+  gather_facts: no
+  roles:
+    - tableau-worker-install
+
+- name: update topology for the primary
+  hosts: tag_application_tableau:&tag_role_primary
+  connection: winrm
+  gather_facts: no
+  roles:
+    - tableau-topology
+
+- name: update topology for the workers
+  hosts: tag_application_tableau:&tag_role_worker
+  connection: winrm
+  gather_facts: no
+  serial: 1
+  roles:
+    - tableau-topology
+
+- name: prepare the application and restart it
+  hosts: tag_application_tableau:&tag_role_primary
+  connection: winrm
+  gather_facts: no
+  roles:
+    - tableau-restart
+  tasks:
+    - name: add the initial user
+      win_shell: >
+        tabcmd initialuser
+        --server localhost:{{ tableau_http_port }}
+        --username {{ tableau_content_admin_user }}
+        --password {{ tableau_content_admin_pass }}
+      args:
+        chdir: "{{ tableau_bin_dir }}"
+        executable: cmd

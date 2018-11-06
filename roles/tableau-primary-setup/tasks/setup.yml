@@ -1,0 +1,62 @@
+---
+- name: generate install config file
+  win_template:
+    src: primary-config.json.j2
+    dest: "{{ tableau_primary_config_path }}"
+
+- name: get the authentication configuration
+  win_shell: >
+    tsm configuration get -k wgserver.authenticate
+    -u {{ tableau_local_admin_user }}
+    -p {{ tableau_local_admin_pass }}
+  args:
+    chdir: "{{ tableau_bin_dir }}"
+    executable: cmd
+  async: 120 # escape winrm job memory limits by using async
+  poll: 5
+  ignore_errors: yes
+  register: auth
+
+- set_fact:
+    fresh_install: "{{ (auth.stdout | trim) != 'local' }}"
+
+- name: run the tsm command to import the primary node config
+  win_shell: >
+    tsm settings import
+    --config-only
+    -f {{ tableau_primary_config_path }}
+    -u {{ tableau_local_admin_user }}
+    -p {{ tableau_local_admin_pass }}
+  args:
+    chdir: "{{ tableau_bin_dir }}"
+    executable: cmd
+  async: 120 # escape winrm job memory limits by using async
+  poll: 5
+  register: set_config
+  when: fresh_install
+
+- name: run the tsm command to apply pending changes
+  win_shell: >
+    tsm pending-changes apply
+    --ignore-prompt
+    --ignore-warnings
+    --request-timeout 2700
+    -u {{ tableau_local_admin_user }}
+    -p {{ tableau_local_admin_pass }}
+  args:
+    chdir: "{{ tableau_bin_dir }}"
+    executable: cmd
+  async: 2700 # escape winrm job memory limits by using async
+  when: set_config is changed
+
+- name: run the tsm command to save the bootstrap config for additional nodes
+  win_shell: >
+    tsm topology nodes get-bootstrap-file
+    --file "{{ tableau_node_bootstrap_config_path }}"
+    -u {{ tableau_local_admin_user }}
+    -p {{ tableau_local_admin_pass }}
+  args:
+    chdir: "{{ tableau_bin_dir }}"
+    executable: cmd
+  async: 120 # escape winrm job memory limits by using async
+  poll: 5

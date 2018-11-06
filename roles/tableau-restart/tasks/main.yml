@@ -1,0 +1,11 @@
+---
+- name: restart services
+  win_shell: >
+    tsm restart
+    --request-timeout 3600
+    -u {{ tableau_local_admin_user }}
+    -p {{ tableau_local_admin_pass }}
+  args:
+    chdir: "{{ tableau_bin_dir }}"
+    executable: cmd
+  async: 3600

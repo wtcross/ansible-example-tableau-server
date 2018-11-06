@@ -1,0 +1,6 @@
+---
+- name: fail if tableau_node_bootstrap_config_path is not defined
+  fail:
+    msg: missing required variable `tableau_node_bootstrap_config_path`
+  when: tableau_node_bootstrap_config_path is not defined
+  run_once: yes

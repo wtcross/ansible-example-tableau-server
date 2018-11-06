@@ -1,0 +1,39 @@
+---
+- name: check that all required variables are present
+  include_tasks: pre-flight-checks.yml
+
+- name: download the exe from a url
+  when: tableau_install_exe_url is defined
+  block:
+    - name: ensure the tableau setup exe is in place
+      win_get_url:
+        url: "{{ tableau_install_exe_url }}"
+        dest: "{{ app_install_dir }}"
+      register: exe_download
+
+    - set_fact:
+        tableau_install_exe_path: "{{ exe_download.dest }}"
+
+- name: ensure the tableau local admin user is created
+  win_user:
+    name: "{{ tableau_local_admin_user }}"
+    description: User dedicated to running Tableau
+    groups: Administrators
+    password: "{{ tableau_local_admin_pass }}"
+    password_never_expires: yes
+    user_cannot_change_password : yes
+    state: present
+  when: tableau_create_local_admin | default('no') | bool
+
+- name: ensure firewall rules allow tableau traffic
+  win_shell: Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
+  when: tableau_open_firewall | bool
+
+- name: ensure each machine knows about the other
+  win_copy:
+    dest: c:\Windows\System32\Drivers\etc\hosts
+    content: |
+      {% for host in groups['tag_application_tableau'] %}
+      {{ hostvars[host]['ansible_ip_addresses'][0] }}     {{ hostvars[host]['ansible_hostname'] }}
+      {% endfor %}
+  when: populate_hosts_file | default('no') | bool

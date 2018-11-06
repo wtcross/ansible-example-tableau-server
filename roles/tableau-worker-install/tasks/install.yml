@@ -1,0 +1,38 @@
+---
+- name: ensure the install log file is created
+  win_tempfile:
+    path: "{{ app_install_dir }}"
+    prefix: TableauServerInstaller_
+    suffix: .log
+    state: file
+  register: log_file
+
+- name: pull the node config file from the primary node
+  slurp:
+    src: "{{ tableau_node_bootstrap_config_path }}"
+  delegate_to: tableau-primary
+  register: node_bootstrap_config
+
+- name: push the node config file to the worker node
+  win_copy:
+    dest: "{{ tableau_node_bootstrap_config_path }}"
+    content: "{{ node_bootstrap_config.content | b64decode }}"
+
+- name: tableau worker install
+  win_package:
+    path: "{{ tableau_install_exe_path }}"
+    product_id: TableauServer{{ tableau_target_version }}_is1
+    creates_path: "{{ tableau_install_dir }}"
+    arguments: >
+      /VERYSILENT
+      /SUPPRESSMSGBOXES
+      /ACCEPTEULA
+      /LOG="{{ log_file.path }}"
+      /DIR="{{ tableau_install_dir }}"
+      /DATADIR="{{ tableau_install_dir }}"
+      /BOOTSTRAPFILE="{{ tableau_node_bootstrap_config_path }}"
+    state: present
+  environment:
+    TableauAdminUser: "{{ tableau_local_admin_user }}"
+    TableauAdminPassword: "{{ tableau_local_admin_pass }}"
+  async: 300

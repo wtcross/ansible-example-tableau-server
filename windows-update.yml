@@ -1,0 +1,6 @@
+---
+- name: perform a windows update on all systems 
+  hosts: all
+  gather_facts: no
+  roles:
+    - windows-update

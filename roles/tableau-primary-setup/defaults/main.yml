@@ -1,0 +1,9 @@
+---
+tableau_service_user: NT AUTHORITY\\NetworkService
+tableau_http_port: 80
+tableau_open_firewall: yes
+tableau_ssl_enabled: no
+tableau_ssl_redirect: no
+
+tableau_primary_config_path: C:\tableau-primary-config.json
+tableau_primary_registration_config_path: C:\tableau-registration.json

@@ -1,0 +1,4 @@
+---
+- include: pre-flight-checks.yml
+
+- include: install.yml

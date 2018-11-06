@@ -1,0 +1,40 @@
+---
+- include: pre-flight-checks.yml
+
+- name: uninstall tableau
+  win_package:
+    path: "{{ tableau_install_exe_path }}"
+    product_id: TableauServer{{ tableau_target_version }}_is1
+    state: absent
+
+- name: ensure the tableau installation directory is removed
+  win_file:
+    path: "{{ tableau_install_dir }}"
+    state: absent
+
+- name: ensure the tableau version file is removed
+  win_file:
+    path: "{{ tableau_version_file_path }}"
+    state: absent
+
+- name: ensure the tableau drivers folder is removed
+  win_file:
+    path: C:\Program Files\Tableau
+    state: absent
+
+- name: ensure the tableau environment variables are removed
+  win_environment:
+    level: system
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - TABLEAU_SERVER_CONFIG_NAME
+    - TABLEAU_SERVER_DATA_DIR
+    - TABLEAU_SERVER_DATA_DIR_VERSION
+    - TABLEAU_SERVER_INSTALL_DIR
+
+- name: ensure the tableau registry values are removed
+  win_regedit:
+    path: HKLM:\SOFTWARE\Tableau
+    state: absent
+    delete_key: yes

@@ -1,0 +1,31 @@
+---
+- name: activate the installation as a trial
+  win_shell: >
+    tsm licenses activate
+    --trial
+    -u {{ tableau_local_admin_user }}
+    -p {{ tableau_local_admin_pass }}
+  args:
+    chdir: "{{ tableau_bin_dir }}"
+    executable: cmd
+  when: >
+    tableau_product_keys is not defined or
+    'trial' in tableau_product_keys
+  async: 120 # escape winrm job memory limits by using async
+  poll: 5
+
+- name: for each product key, run the tsm command to activate the key
+  win_shell: >
+    tsm licenses activate
+    --license-key "{{ item }}"
+    -u {{ tableau_local_admin_user }}
+    -p {{ tableau_local_admin_pass }}
+  args:
+    chdir: "{{ tableau_bin_dir }}"
+    executable: cmd
+  loop: "{{ tableau_product_keys }}"
+  when:
+    - tableau_product_keys is defined
+    - ('trial' not in tableau_product_keys)
+  async: 120 # escape winrm job memory limits by using async
+  poll: 5

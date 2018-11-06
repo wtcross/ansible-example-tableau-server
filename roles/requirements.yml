@@ -1,0 +1,4 @@
+---
+- name: aws-provisioning
+  src: https://github.com/wtcross/ansible-example-role-aws-provisioning.git
+  version: master

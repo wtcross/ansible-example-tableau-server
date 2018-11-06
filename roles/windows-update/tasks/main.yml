@@ -1,0 +1,15 @@
+---
+- name: perform a windows update
+  win_updates:
+    category_names: "{{ category_names | default(default_windows_update_categories) }}"
+    reboot: no
+    state: installed
+  register: windows_update
+
+- name: restart windows if needed
+  win_reboot:
+  register: windows_reboot
+  when: windows_update.reboot_required
+
+- debug:
+    var: windows_reboot.elapsed

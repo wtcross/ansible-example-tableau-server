@@ -1,0 +1,47 @@
+---
+- name: prepare instances for provisioning
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - add_host:
+        hostname: instance-profile-{{ ip_index }}
+        group: instance-profile
+        aws_instance_name: "{{ item.name }}"
+        aws_instance_tags:
+          example: tableau-server
+          application: tableau
+          role: "{{ item.role }}"
+        aws_instance_vpc_subnet_id: subnet-4b26b210
+        aws_instance_type: m5.2xlarge
+        aws_instance_security_groups:
+          - sg-15391769
+        aws_instance_key_name: tcross-ansible
+        aws_ami_owners: amazon
+        aws_ami_filters: 
+          name: Windows_Server-2012-R2_RTM-English-64Bit-Base-*
+        aws_instance_region: us-east-1
+        aws_instance_user_data: |
+          <powershell>
+          $admin = [adsi]("WinNT://./administrator, user")
+          $admin.PSBase.Invoke("SetPassword", "{{ aws_provisioning_password }}")
+          Invoke-Expression ((New-Object System.Net.Webclient).DownloadString('https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1'))
+          </powershell>
+        aws_instance_root_block_device_override:
+          volume_type: gp2
+          volume_size: 75
+          delete_on_termination: yes
+      loop:
+        - name: tableau-primary
+          role: primary
+        - name: tableau-worker-1
+          role: worker
+      loop_control:
+        index_var: ip_index
+
+- name: provision and wait for each cluster instance
+  hosts: instance-profile
+  connection: local
+  gather_facts: no
+  roles:
+    - aws-provisioning

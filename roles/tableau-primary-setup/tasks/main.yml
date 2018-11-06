@@ -1,0 +1,4 @@
+---
+- include: activate.yml
+- include: register.yml
+- include: setup.yml
