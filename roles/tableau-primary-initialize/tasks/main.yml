@@ -1,4 +1,11 @@
 ---
+- include_role:
+    name: logger
+  vars:
+    log_label: initialize
+    log_data:
+      message: started
+
 - name: run the tsm command to initialize
   win_shell: >
     tsm initialize
@@ -9,3 +16,10 @@
     chdir: "{{ tableau_bin_dir }}"
     executable: cmd
   async: 2700 # escape winrm job memory limits by using async
+
+- include_role:
+    name: logger
+  vars:
+    log_label: initialize
+    log_data:
+      message: finished

@@ -1,4 +1,11 @@
 ---
+- include_role:
+    name: logger
+  vars:
+    log_label: restart services
+    log_data:
+      message: started
+
 - name: restart services
   win_shell: >
     tsm restart
@@ -9,3 +16,10 @@
     chdir: "{{ tableau_bin_dir }}"
     executable: cmd
   async: 3600
+
+- include_role:
+    name: logger
+  vars:
+    log_label: restart services
+    log_data:
+      message: finished

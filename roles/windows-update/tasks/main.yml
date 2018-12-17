@@ -1,15 +1,48 @@
 ---
-- name: perform a windows update
-  win_updates:
-    category_names: "{{ category_names | default(default_windows_update_categories) }}"
-    reboot: no
-    state: installed
-  register: windows_update
+- block:
+    - include_role:
+        name: logger
+      vars:
+        log_label: windows update
+        log_data:
+          message: started
+
+    - name: perform a windows update
+      win_updates:
+        category_names: "{{ category_names | default(default_windows_update_categories) }}"
+        reboot: no
+        state: installed
+      register: windows_update
+
+    - include_role:
+        name: logger
+      vars:
+        log_label: windows update
+        log_data:
+          message: finished
+  rescue:
+    - include_role:
+        name: logger
+      vars:
+        log_label: windows update
+        log_data:
+          message: failed
+
+- include_role:
+    name: logger
+  vars:
+    log_label: reboot
+    log_data:
+      message: started
 
 - name: restart windows if needed
   win_reboot:
   register: windows_reboot
-  when: windows_update.reboot_required
 
-- debug:
-    var: windows_reboot.elapsed
+- include_role:
+    name: logger
+  vars:
+    log_label: reboot
+    log_data:
+      message: finished
+      elapsed: "{{ windows_reboot.elapsed }}"
