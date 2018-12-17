@@ -1,0 +1,9 @@
+---
+tableau_open_firewall: yes
+tableau_target_version: "20182.18.0826.0815"
+app_install_dir: C:\
+tableau_bin_dir: "{{ tableau_install_dir }}\\packages\\bin.{{ tableau_target_version }}"
+tableau_version_file_path: C:\TableauServerInstallerVersion.txt
+tableau_install_dir: C:\TableauServer
+tableau_node_bootstrap_config_path: C:\nodeConfiguration.json
+tableau_http_port: 80

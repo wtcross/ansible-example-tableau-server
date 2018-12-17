@@ -1,0 +1,14 @@
+---
+node_name: node1
+processes:
+  clustercontroller: 1
+  gateway: 1
+  searchserver: 1
+  vizportal: 1
+  vizqlserver: 1
+  dataserver: 1
+  cacheserver: 1
+  backgrounder: 1
+  dataengine: 1
+  filestore: 1
+  pgsql: 1

@@ -1,0 +1,14 @@
+---
+node_name: node2
+processes:
+  clustercontroller: 1
+  gateway: 1
+  vizportal: 0      # set to 0 for licensing reasons
+  vizqlserver: 0    # set to 0 for licensing reasons
+  cacheserver: 1
+  searchserver: 1
+  backgrounder: 0   # set to 0 for licensing reasons
+  dataengine: 1
+  dataserver: 0     # set to 0 for licensing reasons
+  filestore: 1
+  pgsql: 0
