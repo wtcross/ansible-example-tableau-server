@@ -1,7 +1,11 @@
 ---
+- set_fact:
+    kvs: "{{ (kvs | default([])) + [kv] }}"
+  vars:
+    kv: "{{ item.0 }}='{{ item.1 }}'"
+  loop: "{{ log_data | default({}) | dictsort }}"
+
 - win_lineinfile:
     create: yes
     path: "{{ log_file_path }}"
-    line: "{{ ansible_date_time.iso8601 }} [{{ log_label }}] {{ log_data | to_json }}"
-  vars:
-    kvs: "{{ log_data | default({}) | dictsort }}"
+    line: "[{{ ansible_date_time.iso8601 }}] [{{ log_label }}] {{ kvs | join(' ') }}"
