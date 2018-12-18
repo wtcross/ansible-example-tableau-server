@@ -1,7 +1,6 @@
 ---
 - win_lineinfile:
     create: yes
-    insertafter: EOF
     path: "{{ log_file_path }}"
     line: "{{ ansible_date_time.iso8601 }} [{{ log_label }}] {{ log_data | to_json }}"
   vars:
